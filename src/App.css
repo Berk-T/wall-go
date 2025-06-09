@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@custom-variant hover (&:hover);
+
+@theme {
+  --color-tile-default: #7e5547;
+  --color-tile-selected: #4caf50;
+  --color-tile-owned-red: #f44336;
+  --color-tile-owned-blue: #2196f3;
+
+  --color-tile-clickable-red: #ff5447;
+  --color-tile-clickable-blue: #2196f3;
+  --color-tile-hover-red: #ff8076;
+  --color-tile-hover-blue: #64b5f7;
+
+  --color-puck-red: #b80f00;
+  --color-puck-blue: #1f487e;
+
+  --color-wall-default: #a8897e;
+  --color-wall-red: #984244;
+  --color-wall-blue: #1b406a;
+
+  --color-wall-clickable-red: #d66b6b;
+  --color-wall-clickable-blue: #6b9cd6;
+  --color-wall-hover-red: #e6a1a1;
+  --color-wall-hover-blue: #a1c6e6;
+
+  --color-backround: #fec196;
+}
