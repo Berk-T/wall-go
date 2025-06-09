@@ -15,6 +15,7 @@ export function useGameLogic() {
           if (col % 2 === 0) {
             tile = {
               type: "wall",
+              color: "default",
               onClick: () => handleWallClick(row * 13 + col),
             };
           } else {
@@ -23,12 +24,14 @@ export function useGameLogic() {
         } else if (col % 2 === 1) {
           tile = {
             type: "wall",
+            color: "default",
             onClick: () => handleWallClick(row * 13 + col),
           };
         } else {
           tile = {
             type: "tile",
             color: "clickable-" + currentPlayer,
+            puck: null,
             onClick: () => handleTileClick(row * 13 + col),
           };
         }
@@ -72,6 +75,7 @@ export function useGameLogic() {
     // board[9].color = "clickable-red";
 
     // board[11].color = "clickable-blue";
+
     return board;
   };
   const [board, setBoard] = useState(createBoard);
@@ -85,29 +89,77 @@ export function useGameLogic() {
   };
 
   const handleWallClick = (index) => {
-    console.log(index);
-    if (!board[index].color.includes("clickacble")) {
+    console.log("Wall clicked", index);
+    if (!board[index].color.includes("clickable")) {
       console.log("Wall not clickable:", index);
       return;
     }
 
-    const wall = board[index];
-    const newBoard = [
-      ...board.slice(0, index),
-      {
-        ...wall,
-        ownedBy: currentPlayer,
-        isClickable: false,
-      },
-      ...board.slice(index + 1),
-    ];
-    setBoard(newBoard);
+    const newBoard = board.map((tile, idx) => {
+      if (idx === index) {
+        return {
+          ...tile,
+          color: "owned-" + currentPlayer,
+        };
+      } else {
+        return {
+          ...tile,
+          color: tile.color.includes("owned") ? tile.color : "default", // Keep owned unchanged, reset others
+        };
+      }
+    });
+
+    // If wall is placed without moving
+    setSelectedTile(null);
 
     // Check if area is claimed now
+    const areas = getAreas(newBoard);
+    console.log("Areas found:", areas.length);
+    if (areas.length > 1) {
+      for (const area of areas) {
+        const owner = getAreaOwner(newBoard, area);
+        if (owner) {
+          console.log("Area claimed by:", owner);
+          area.forEach((tileIndex) => {
+            newBoard[tileIndex].color = "owned-" + owner;
+            newBoard[tileIndex].owner = owner;
+          });
+        } else {
+          area.forEach((tileIndex) => {
+            newBoard[tileIndex].color = "default"; // Reset unclaimed areas
+            newBoard[tileIndex].owner = null;
+          });
+        }
+      }
+    }
+
     // Check if game over
+    // Calculate clickable tiles (pucks)
+    const boardWithClickables = calculateClickablePucks(
+      newBoard,
+      getNextPlayer()
+    );
+    setBoard(boardWithClickables);
     // Hand over turn
     switchPlayer();
-    // Calculate clickable tiles
+  };
+
+  const visualizeAreas = (board, areas) => {
+    const newBoard = board.map((tile) => {
+      return {
+        ...tile,
+      };
+    });
+
+    areas.forEach((area, index) => {
+      console.log("Visualizing area:", index);
+      area.forEach((tileIndex) => {
+        newBoard[tileIndex].color =
+          index % 2 === 0 ? "owned-red" : "owned-blue";
+      });
+    });
+
+    return newBoard;
   };
 
   const handlePlacement = (index) => {
@@ -147,16 +199,50 @@ export function useGameLogic() {
 
   const calculateClickablePucks = (board, player) => {
     const newBoard = board.map((tile) => {
-      return {
-        ...tile,
-        color: tile.puck === player ? "clickable-" + player : "default",
-      };
+      if (tile.type === "tile") {
+        return {
+          ...tile,
+          color:
+            tile.puck === player
+              ? "clickable-" + player
+              : tile.color.includes("owned")
+              ? tile.color
+              : "default",
+        };
+      } else {
+        return {
+          ...tile,
+          color: tile.color.includes("owned") ? tile.color : "default",
+        };
+      }
     });
     return newBoard;
   };
 
+  const calculateClickableWalls = (board, index) => {
+    const directions = [
+      -13, // Up
+      13, // Down
+      -1, // Left
+      1, // Right
+    ];
+    for (const dir of directions) {
+      const neighborIndex = index + dir;
+      if (
+        neighborIndex >= 0 &&
+        neighborIndex < board.length &&
+        board[neighborIndex].type === "wall" &&
+        !board[neighborIndex].color.includes("owned")
+      ) {
+        // If wall is not owned, make it clickable
+        board[neighborIndex].color = "clickable-" + currentPlayer;
+      }
+    }
+    return board;
+  };
+
   const handleTileClick = (index) => {
-    console.log(index);
+    console.log("Tile clicked", index);
 
     // Deselecting tile
     if (board[index].color === "selected") {
@@ -179,92 +265,103 @@ export function useGameLogic() {
     }
 
     // Selecting puck to move
-    if (!selectedTile && board[index].color === "clickable-" + currentPlayer) {
+    if (!selectedTile && board[index].puck === currentPlayer) {
       console.log("Selecting tile:", index);
       setSelectedTile(index);
-      const movableTiles = calculateMovableTiles(index);
-      const newBoard = board.map((tile, idx) => {
-        return {
-          ...tile,
-          color: movableTiles.includes(idx)
-            ? "clickable-" + currentPlayer
-            : "default",
-        };
-      });
+      const newBoard = calculateMovableTiles(board, index);
       newBoard[index].color = "selected"; // Highlight selected tile
-      console.log("Movable tiles:", movableTiles);
       setBoard(newBoard);
       return;
     }
 
     // Move puck
-    let newBoard = board.map((tile, idx) => {
+    const newBoard = board.map((tile, idx) => {
       if (idx === selectedTile) {
         return {
           ...tile,
           puck: null,
-          color: "default",
+          color: tile.owner ? "owned-" + tile.owner : "default", // Reset to previous color or default
         };
       } else if (idx === index) {
         return {
           ...tile,
           puck: currentPlayer,
-          color: "default",
+          color: tile.owner ? "owned-" + tile.owner : "default", // Set to owned color or default
         };
       } else {
-        return {
-          ...tile,
-          color: "default",
-        };
+        if (tile.type === "tile") {
+          return {
+            ...tile,
+            color: tile.owner ? "owned-" + tile.owner : "default",
+          };
+        } else {
+          return {
+            ...tile,
+            color: tile.color.includes("owned") ? tile.color : "default", // Keep owned tiles unchanged
+          };
+        }
       }
     });
 
-    setBoard(newBoard);
+    const boardWithClickables = calculateClickableWalls(newBoard, index);
+    setBoard(boardWithClickables);
     setSelectedTile(null);
-    //calculateClickableWalls(index)
   };
 
-  const calculateMovableTiles = (index) => {
+  const canMoveToSameTile = (board, index) => {
+    const neighbors = getTileNeighbors(board, index);
+    for (const neighborIndex of neighbors) {
+      if (board[neighborIndex].puck) continue; // Skip if neighbor has a puck
+      if (getTileNeighbors(board, neighborIndex).includes(index)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const calculateMovableTiles = (board, index) => {
+    const newBoard = board.map((tile) => {
+      if (tile.type === "tile") {
+        return {
+          ...tile,
+          color: tile.owner ? "owned-" + tile.owner : "default",
+        };
+      } else {
+        return tile;
+      }
+    });
     let queue = [[index, 2]];
     const visited = new Set();
-    const movableTiles = [];
-    const directions = [
-      -26, // Up
-      26, // Down
-      -2, // Left
-      2, // Right
-    ];
 
     while (queue.length > 0) {
       const [currentIndex, currentSteps] = queue.shift();
-      console.log(
-        `Visiting index: ${currentIndex}, steps left: ${currentSteps}`
-      );
+
       if (visited.has(currentIndex) || currentSteps <= 0) continue;
       visited.add(currentIndex);
 
       // Check neighbors
-      for (const dir of directions) {
-        const neighborIndex = currentIndex + dir;
-        console.log(
-          `Checking neighbor index: ${neighborIndex} from current index: ${currentIndex}`
-        );
+      for (const neighborIndex of getTileNeighbors(newBoard, currentIndex)) {
         if (
-          neighborIndex >= 0 &&
-          neighborIndex < board.length &&
           !visited.has(neighborIndex) &&
-          board[neighborIndex].type === "tile" &&
-          !board[neighborIndex].puck &&
-          !isWallBetweenTiles(board, currentIndex, neighborIndex)
+          !newBoard[neighborIndex].puck &&
+          !isWallBetweenTiles(newBoard, currentIndex, neighborIndex)
         ) {
-          console.log(`Adding neighbor index: ${neighborIndex}`);
           queue.push([neighborIndex, currentSteps - 1]);
-          movableTiles.push(neighborIndex);
+          newBoard[neighborIndex].color = "clickable-" + currentPlayer;
         }
       }
     }
 
-    return movableTiles;
+    // May also be able to place walls next to current puck
+    // (moving 1 space and then moving back to the same tile)
+    if (canMoveToSameTile(newBoard, index)) {
+      for (const neighborIndex of getWallNeighbors(newBoard, index)) {
+        if (!newBoard[neighborIndex].color.includes("owned")) {
+          newBoard[neighborIndex].color = "clickable-" + currentPlayer;
+        }
+      }
+    }
+    return newBoard;
   };
 
   return {
@@ -277,7 +374,47 @@ export function useGameLogic() {
 
 const BOARD_SIZE = 13; // 13x13 board
 
-function isWallBetweenTiles(board, index1, index2) {
+const getTileNeighbors = (board, index) => {
+  const neighbors = [];
+  const directions = [
+    -26, // up
+    26, // down
+    -2, // left
+    2, // right
+  ];
+
+  for (const dir of directions) {
+    const neighborIndex = index + dir;
+    if (
+      neighborIndex >= 0 &&
+      neighborIndex < board.length &&
+      !isWallBetweenTiles(board, index, neighborIndex)
+    ) {
+      neighbors.push(neighborIndex);
+    }
+  }
+  return neighbors;
+};
+
+const getWallNeighbors = (board, index) => {
+  const neighbors = [];
+  const directions = [
+    -13, // up
+    13, // down
+    -1, // left
+    1, // right
+  ];
+
+  for (const dir of directions) {
+    const neighborIndex = index + dir;
+    if (neighborIndex >= 0 && neighborIndex < board.length) {
+      neighbors.push(neighborIndex);
+    }
+  }
+  return neighbors;
+};
+
+const isWallBetweenTiles = (board, index1, index2) => {
   // r1, c1, r2, c2 are indices of tiles in 13x13 board, all even numbers
   const r1 = Math.floor(index1 / BOARD_SIZE);
   const c1 = index1 % BOARD_SIZE;
@@ -286,7 +423,6 @@ function isWallBetweenTiles(board, index1, index2) {
 
   if (r1 === r2 && Math.abs(c1 - c2) === 2) {
     // Horizontal neighbors
-    console.log("Horizontal neighbors");
     const wallCol = Math.min(c1, c2) + 1; // odd col between tiles
     const wallRow = r1; // same row
     const wallIndex = wallRow * BOARD_SIZE + wallCol;
@@ -296,7 +432,6 @@ function isWallBetweenTiles(board, index1, index2) {
 
   if (c1 === c2 && Math.abs(r1 - r2) === 2) {
     // Vertical neighbors
-    console.log("Vertical neighbors");
     const wallRow = Math.min(r1, r2) + 1;
     const wallCol = c1; // same col
     const wallIndex = wallRow * BOARD_SIZE + wallCol;
@@ -306,76 +441,50 @@ function isWallBetweenTiles(board, index1, index2) {
   // Not neighbors or invalid
 
   return true;
-}
+};
 
-function getTileNeighbors(board, index) {
-  const r = Math.floor(index / BOARD_SIZE);
-  const c = index % BOARD_SIZE;
-  const neighbors = [];
-  const directions = [
-    [-2, 0], // up
-    [2, 0], // down
-    [0, -2], // left
-    [0, 2], // right
-  ];
+const getAreas = (board) => {
+  const visited = new Set();
+  const areas = [];
 
-  for (const [dr, dc] of directions) {
-    const nr = r + dr;
-    const nc = c + dc;
+  const dfs = (index, area) => {
+    if (visited.has(index)) return;
+    visited.add(index);
+    area.push(index);
 
-    if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
-      if (!isWallBetweenTiles(board, r, c, nr, nc)) {
-        neighbors.push([nr, nc]);
-      }
+    for (const neighbor of getTileNeighbors(board, index)) {
+      dfs(neighbor, area);
     }
-  }
-  return neighbors;
-}
+  };
 
-export function findEnclosedAreas(board) {
-  const visited = Array(BOARD_SIZE)
-    .fill(null)
-    .map(() => Array(BOARD_SIZE).fill(false));
-  const enclosedAreas = [];
+  for (let i = 0; i < board.length; i += 2) {
+    if (Math.floor(i / BOARD_SIZE) % 2 === 1) {
+      // Skip walls and intersections
+      continue;
+    }
 
-  for (let r = 0; r < BOARD_SIZE; r += 2) {
-    for (let c = 0; c < BOARD_SIZE; c += 2) {
-      if (!visited[r][c]) {
-        const queue = [[r, c]];
-        visited[r][c] = true;
-        const component = [];
-        let touchesBoundary = false;
-
-        while (queue.length > 0) {
-          const [cr, cc] = queue.shift();
-          component.push([cr, cc]);
-
-          // Check if tile touches boundary
-          if (
-            cr === 0 ||
-            cr === BOARD_SIZE - 1 ||
-            cc === 0 ||
-            cc === BOARD_SIZE - 1
-          ) {
-            touchesBoundary = true;
-          }
-
-          // Explore neighbors without walls between
-          const neighbors = getTileNeighbors(board, cr, cc);
-          for (const [nr, nc] of neighbors) {
-            if (!visited[nr][nc]) {
-              visited[nr][nc] = true;
-              queue.push([nr, nc]);
-            }
-          }
-        }
-
-        if (!touchesBoundary) {
-          enclosedAreas.push(component);
-        }
+    if (!visited.has(i)) {
+      const area = [];
+      dfs(i, area);
+      if (area.length > 0) {
+        area.sort((a, b) => a - b); // Sort area indices
+        areas.push(area);
       }
     }
   }
 
-  return enclosedAreas; // enclosed tile groups
-}
+  return areas;
+};
+
+const getAreaOwner = (board, area) => {
+  const redCount = area.filter((index) => board[index].puck === "red").length;
+  const blueCount = area.filter((index) => board[index].puck === "blue").length;
+
+  if (redCount > 0 && blueCount === 0) {
+    return "red";
+  } else if (blueCount > 0 && redCount === 0) {
+    return "blue";
+  }
+
+  return null; // No owner or both players have pucks in the area
+};
