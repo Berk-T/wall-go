@@ -5,6 +5,12 @@ export function useGameLogic() {
   const [currentPlayer, setCurrentPlayer] = useState("red");
   const [selectedTile, setSelectedTile] = useState(null);
   const [remainingPlacements, setRemainingPlacements] = useState(4);
+  const [score, setScore] = useState({ red: 0, blue: 0 });
+  const [gameOver, setGameOver] = useState({
+    gameOver: false,
+    winner: null,
+    reason: null,
+  });
 
   const createBoard = () => {
     const board = [];
@@ -95,7 +101,7 @@ export function useGameLogic() {
       return;
     }
 
-    const newBoard = board.map((tile, idx) => {
+    let newBoard = board.map((tile, idx) => {
       if (idx === index) {
         return {
           ...tile,
@@ -112,14 +118,16 @@ export function useGameLogic() {
     // If wall is placed without moving
     setSelectedTile(null);
 
-    // Check if area is claimed now
+    // Check claimed areas, tally scores, and update board
     const areas = getAreas(newBoard);
     console.log("Areas found:", areas.length);
+    let scores = { red: 0, blue: 0 };
     if (areas.length > 1) {
       for (const area of areas) {
         const owner = getAreaOwner(newBoard, area);
         if (owner) {
           console.log("Area claimed by:", owner);
+          scores[owner] += area.length; // Tally score based on area size
           area.forEach((tileIndex) => {
             newBoard[tileIndex].color = "owned-" + owner;
             newBoard[tileIndex].owner = owner;
@@ -131,17 +139,72 @@ export function useGameLogic() {
           });
         }
       }
+      setScore(scores);
     }
 
-    // Check if game over
     // Calculate clickable tiles (pucks)
-    const boardWithClickables = calculateClickablePucks(
-      newBoard,
-      getNextPlayer()
-    );
+    const { newBoard: boardWithClickables, movablePucks } =
+      calculateClickablePucks(newBoard, getNextPlayer());
+
     setBoard(boardWithClickables);
+    // Check if game over (no movable pucks left OR one player has >= 25 points)
+    if (checkGameOver(scores, movablePucks)) {
+      freezeBoard(boardWithClickables);
+      return; // Game is over, no need to switch player
+    }
     // Hand over turn
     switchPlayer();
+  };
+
+  const freezeBoard = (board) => {
+    const newBoard = board.map((tile) => {
+      if (tile.type === "tile") {
+        return {
+          ...tile,
+          color: tile.owner ? "owned-" + tile.owner : "default",
+        };
+      } else {
+        return {
+          ...tile,
+          color: tile.color.includes("owned") ? tile.color : "default",
+        };
+      }
+    });
+
+    setBoard(newBoard);
+    setSelectedTile(null);
+  };
+
+  const checkGameOver = (scores, movablePucks) => {
+    if (movablePucks > 0 && scores.red < 25 && scores.blue < 25) {
+      return false; // Game continues
+    }
+
+    console.log("Game Over");
+    if (movablePucks === 0) {
+      console.log("No movable pucks left");
+      setGameOver({
+        gameOver: true,
+        winner: getNextPlayer(),
+        reason: "No movable pucks left",
+      });
+    } else if (scores.red >= 25) {
+      console.log("Red player wins with score:", scores.red);
+      setGameOver({
+        gameOver: true,
+        winner: "red",
+        reason: "Red player reached 25 points",
+      });
+    } else if (scores.blue >= 25) {
+      console.log("Blue player wins with score:", scores.blue);
+      setGameOver({
+        gameOver: true,
+        winner: "blue",
+        reason: "Blue player reached 25 points",
+      });
+    }
+
+    return true; // Game is over
   };
 
   const visualizeAreas = (board, areas) => {
@@ -184,11 +247,11 @@ export function useGameLogic() {
 
     if (remainingPlacements - 1 === 0) {
       // If no placements left, calculate clickable pucks
-      const newBoardWithClickable = calculateClickablePucks(
+      const { newBoard: newBoardWithClickables } = calculateClickablePucks(
         newBoard,
         getNextPlayer()
       );
-      setBoard(newBoardWithClickable);
+      setBoard(newBoardWithClickables);
     } else {
       // If placements left, just update the board
       setBoard(newBoard);
@@ -198,12 +261,17 @@ export function useGameLogic() {
   };
 
   const calculateClickablePucks = (board, player) => {
-    const newBoard = board.map((tile) => {
+    let movablePucks = 0;
+    const newBoard = board.map((tile, idx) => {
       if (tile.type === "tile") {
+        if (tile.puck === player && puckHasMoves(board, idx)) {
+          movablePucks++;
+        }
+
         return {
           ...tile,
           color:
-            tile.puck === player
+            tile.puck === player && puckHasMoves(board, idx)
               ? "clickable-" + player
               : tile.color.includes("owned")
               ? tile.color
@@ -216,7 +284,7 @@ export function useGameLogic() {
         };
       }
     });
-    return newBoard;
+    return { newBoard, movablePucks };
   };
 
   const calculateClickableWalls = (board, index) => {
@@ -241,13 +309,26 @@ export function useGameLogic() {
     return board;
   };
 
+  const puckHasMoves = (board, index) => {
+    const neighbors = getTileNeighbors(board, index);
+    for (const neighborIndex of neighbors) {
+      if (
+        !board[neighborIndex].puck &&
+        !isWallBetweenTiles(board, index, neighborIndex)
+      ) {
+        return true; // Found a valid move
+      }
+    }
+    return false;
+  };
+
   const handleTileClick = (index) => {
     console.log("Tile clicked", index);
 
     // Deselecting tile
     if (board[index].color === "selected") {
       setSelectedTile(null);
-      const newBoard = calculateClickablePucks(board, currentPlayer);
+      const { newBoard } = calculateClickablePucks(board, currentPlayer);
       newBoard[index].color = "clickable-" + currentPlayer;
       setBoard(newBoard);
       console.log("Deselected tile:", index);
@@ -367,6 +448,8 @@ export function useGameLogic() {
   return {
     board,
     currentPlayer,
+    score,
+    gameOver,
     handleTileClick,
     handleWallClick,
   };

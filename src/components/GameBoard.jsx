@@ -1,8 +1,8 @@
 import Wall from "./Wall";
 import Tile from "./Tile";
 
-const tileSize = "4.5rem";
-const wallThickness = "1rem";
+const tileSize = "3fr";
+const wallThickness = "1fr";
 
 const sizes = [
   tileSize,
@@ -48,14 +48,16 @@ const GameBoard = ({ board, onWallClick, onTileClick }) => {
     }
   });
   return (
-    <div
-      className="grid"
-      style={{
-        gridTemplateColumns: sizes.join(" "),
-        gridTemplateRows: sizes.join(" "),
-      }}
-    >
-      {gridElements}
+    <div className="w-full max-w-[90vmin] aspect-square">
+      <div
+        className="grid w-full h-full"
+        style={{
+          gridTemplateColumns: sizes.join(" "),
+          gridTemplateRows: sizes.join(" "),
+        }}
+      >
+        {gridElements}
+      </div>
     </div>
   );
 };

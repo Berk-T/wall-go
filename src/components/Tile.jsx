@@ -24,7 +24,7 @@ export default function Tile({
     >
       {puck && (
         <div
-          className={`w-6 h-6 rounded-full border-1 border-gray-50 ${
+          className={`w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-gray-50 ${
             puck === "red" ? "bg-puck-red" : "bg-puck-blue"
           }`}
         />
