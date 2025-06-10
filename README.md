@@ -15,7 +15,7 @@ Wall Go is a two-player strategic territory control game. Players alternate turn
 1. **🎯 Objective**  
    Win by either:
 
-   - Claiming **25 or more tiles**, or
+   - Claiming **more tiles than your opponent** when all tiles are either claimed or are cut off from both players, or
    - **Trapping** all of your opponent’s pucks so they cannot move.
 
 2. **🧊 Initial Placement Phase**
@@ -43,6 +43,7 @@ Wall Go is a two-player strategic territory control game. Players alternate turn
    The game ends when:
    - A player **controls at least 25 tiles** → they win.
    - A player **cannot move any of their pucks** → their opponent wins.
+   - All tiles are either **controlled or cut off from both players** → player with most tiles controlled wins.
 
 ---
 

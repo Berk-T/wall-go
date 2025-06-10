@@ -77,7 +77,9 @@ function App() {
                   Win by either:
                   <ul>
                     <li>
-                      Claiming <strong>25 or more tiles</strong>, or
+                      Claiming <strong>more tiles than your opponent</strong>{" "}
+                      when all tiles are either claimed or are cut off from both
+                      players, or
                     </li>
                     <li>
                       <strong>Trapping</strong> all of your opponent’s pucks so
@@ -162,6 +164,11 @@ function App() {
                     <li>
                       A player <strong>cannot move any of their pucks</strong> →
                       their opponent wins.
+                    </li>
+                    <li>
+                      All tiles are either{" "}
+                      <strong>controlled or cut off from both players</strong> →
+                      player with most tiles controlled wins.
                     </li>
                   </ul>
                 </li>
