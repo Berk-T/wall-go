@@ -105,10 +105,16 @@ export function useGameLogic() {
     const areas = getAreas(newBoard);
     console.log("Areas found:", areas.length);
     let scores = { red: 0, blue: 0 };
+    let allAreasEnclosed = null;
     if (areas.length > 1) {
+      allAreasEnclosed = true; // Assume all areas are enclosed unless proven otherwise
       for (const area of areas) {
         const owner = getAreaOwner(newBoard, area);
-        if (owner) {
+        if (owner === "mixed") {
+          allAreasEnclosed = false; // Mixed area
+        }
+
+        if (owner === "red" || owner === "blue") {
           console.log("Area claimed by:", owner);
           scores[owner] += area.length; // Tally score based on area size
           area.forEach((tileIndex) => {
@@ -131,7 +137,7 @@ export function useGameLogic() {
 
     setBoard(boardWithClickables);
     // Check if game over (no movable pucks left OR one player has >= 25 points)
-    if (checkGameOver(scores, movablePucks)) {
+    if (checkGameOver(scores, movablePucks, allAreasEnclosed)) {
       freezeBoard(boardWithClickables);
       return; // Game is over, no need to switch player
     }
@@ -227,8 +233,8 @@ export function useGameLogic() {
     setSelectedTile(null);
   };
 
-  const checkGameOver = (scores, movablePucks) => {
-    if (movablePucks > 0 && scores.red < 25 && scores.blue < 25) {
+  const checkGameOver = (scores, movablePucks, allAreasEnclosed) => {
+    if (movablePucks > 0 && !allAreasEnclosed) {
       return false; // Game continues
     }
 
@@ -253,6 +259,18 @@ export function useGameLogic() {
         gameOver: true,
         winner: "blue",
         reason: "Blue player reached 25 points",
+      });
+    } else if (allAreasEnclosed) {
+      console.log("All areas enclosed, game over");
+      setGameOver({
+        gameOver: true,
+        winner:
+          scores.red > scores.blue
+            ? "red"
+            : scores.red === scores.blue
+            ? "tie"
+            : "blue",
+        reason: "All areas enclosed",
       });
     }
 
@@ -611,7 +629,9 @@ const getAreaOwner = (board, area) => {
     return "red";
   } else if (blueCount > 0 && redCount === 0) {
     return "blue";
+  } else if (redCount > 0 && blueCount > 0) {
+    return "mixed"; // Both players have pucks in the area
   }
 
-  return null; // No owner or both players have pucks in the area
+  return "empty"; // No pucks in the area
 };

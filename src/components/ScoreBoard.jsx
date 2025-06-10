@@ -7,7 +7,7 @@ const ScoreBoard = ({ score, gameOver, currentPlayer }) => {
       ? "Red"
       : gameOver.winner === "blue"
       ? "Blue"
-      : "";
+      : "Tie";
 
   return (
     <>
@@ -17,7 +17,9 @@ const ScoreBoard = ({ score, gameOver, currentPlayer }) => {
             className={`text-2xl sm:text-3xl font-extrabold mb-2 ${
               gameOver.winner === "red"
                 ? "text-scoreboard-red"
-                : "text-scoreboard-blue"
+                : gameOver.winner === "blue"
+                ? "text-scoreboard-blue"
+                : "text-gray-400"
             }`}
           >
             <span className="text-white">Winner: </span>
