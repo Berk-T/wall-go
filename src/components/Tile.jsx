@@ -2,7 +2,7 @@ export default function Tile({
   color = "default",
   puck = null,
   rounded = "",
-  onClick = () => console.log("tile"),
+  onClick = null,
 }) {
   const size = "w-full h-full";
   const styleVariants = {

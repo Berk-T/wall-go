@@ -76,9 +76,9 @@ export function useGameLogic() {
   };
 
   const handleWallClick = (index) => {
-    console.log("Wall clicked", index);
+    // console.log("Wall clicked", index);
     if (!board[index].color.includes("clickable")) {
-      console.log("Wall not clickable:", index);
+      // console.log("Wall not clickable:", index);
       return;
     }
 
@@ -103,7 +103,7 @@ export function useGameLogic() {
 
     // Check claimed areas, tally scores, and update board
     const areas = getAreas(newBoard);
-    console.log("Areas found:", areas.length);
+    // console.log("Areas found:", areas.length);
     let scores = { red: 0, blue: 0 };
     let allAreasEnclosed = null;
     if (areas.length > 1) {
@@ -115,7 +115,7 @@ export function useGameLogic() {
         }
 
         if (owner === "red" || owner === "blue") {
-          console.log("Area claimed by:", owner);
+          // console.log("Area claimed by:", owner);
           scores[owner] += area.length; // Tally score based on area size
           area.forEach((tileIndex) => {
             newBoard[tileIndex].color = "owned-" + owner;
@@ -238,30 +238,30 @@ export function useGameLogic() {
       return false; // Game continues
     }
 
-    console.log("Game Over");
+    // console.log("Game Over");
     if (movablePucks === 0) {
-      console.log("No movable pucks left");
+      // console.log("No movable pucks left");
       setGameOver({
         gameOver: true,
         winner: getNextPlayer(),
         reason: "No movable pucks left",
       });
     } else if (scores.red >= 25) {
-      console.log("Red player wins with score:", scores.red);
+      // console.log("Red player wins with score:", scores.red);
       setGameOver({
         gameOver: true,
         winner: "red",
         reason: "Red player reached 25 points",
       });
     } else if (scores.blue >= 25) {
-      console.log("Blue player wins with score:", scores.blue);
+      // console.log("Blue player wins with score:", scores.blue);
       setGameOver({
         gameOver: true,
         winner: "blue",
         reason: "Blue player reached 25 points",
       });
     } else if (allAreasEnclosed) {
-      console.log("All areas enclosed, game over");
+      // console.log("All areas enclosed, game over");
       setGameOver({
         gameOver: true,
         winner:
@@ -375,7 +375,7 @@ export function useGameLogic() {
   };
 
   const handleTileClick = (index) => {
-    console.log("Tile clicked", index);
+    // console.log("Tile clicked", index);
 
     // Deselecting tile
     if (board[index].color === "selected") {
@@ -383,12 +383,12 @@ export function useGameLogic() {
       const { newBoard } = calculateClickablePucks(board, currentPlayer);
       newBoard[index].color = "clickable-" + currentPlayer;
       setBoard(newBoard);
-      console.log("Deselected tile:", index);
+      // console.log("Deselected tile:", index);
       return;
     }
 
     if (!board[index].color.includes("clickable")) {
-      console.log("Tile not clickable:", index);
+      // console.log("Tile not clickable:", index);
       return;
     }
 
@@ -399,7 +399,7 @@ export function useGameLogic() {
 
     // Selecting puck to move
     if (!selectedTile && board[index].puck === currentPlayer) {
-      console.log("Selecting tile:", index);
+      // console.log("Selecting tile:", index);
       setSelectedTile(index);
       const newBoard = calculateMovableTiles(board, index);
       newBoard[index].color = "selected"; // Highlight selected tile

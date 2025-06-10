@@ -1,4 +1,4 @@
-const Wall = ({ color = "default", onClick = () => console.log("wall") }) => {
+const Wall = ({ color = "default", onClick = null }) => {
   const size = "w-full h-full";
   const styleVariants = {
     default: "bg-wall-default",
