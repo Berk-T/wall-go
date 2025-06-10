@@ -10,39 +10,48 @@ const ScoreBoard = ({ score, gameOver, currentPlayer }) => {
       : "";
 
   return (
-    <div className="w-full max-w-[600px] mx-auto px-4 sm:px-6 py-4 bg-white shadow-md rounded-2xl mb-6 text-center">
+    <>
       {isGameOver ? (
         <>
           <h2
             className={`text-2xl sm:text-3xl font-extrabold mb-2 ${
-              gameOver.winner === "red" ? "text-red-600" : "text-blue-600"
+              gameOver.winner === "red"
+                ? "text-scoreboard-red"
+                : "text-scoreboard-blue"
             }`}
           >
-            {winnerText} Wins!
+            <span className="text-white">Winner: </span>
+            {winnerText}
           </h2>
-          <p className="text-gray-600 mb-6 text-sm sm:text-base">
+          <p className="text-white mb-2 text-sm sm:text-base">
             {gameOver.reason}
           </p>
         </>
-      ) : (
-        <>
-          <p className="mb-4 text-base sm:text-lg text-gray-700">
-            Current Turn:{" "}
-            <span
-              className={`font-bold ${
-                currentPlayer === "red" ? "text-red-600" : "text-blue-600"
-              }`}
-            >
-              {currentPlayer.charAt(0).toUpperCase() + currentPlayer.slice(1)}
-            </span>
-          </p>
-        </>
-      )}
-      <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 text-base sm:text-lg font-bold">
-        <span className="text-red-600">{`Red: ${score.red}`}</span>
-        <span className="text-blue-600">{`Blue: ${score.blue}`}</span>
+      ) : null}
+
+      <div className="flex flex-col sm:flex-row mb-5 justify-center gap-4 sm:gap-8 text-base sm:text-lg font-bold">
+        <div
+          className={`flex items-center gap-2 border-solid border border-white/30 bg-background/10 rounded-xl px-3 py-1 ${
+            currentPlayer === "red" && !gameOver.gameOver ? "glow-red" : ""
+          }`}
+        >
+          <span className="flex items-center gap-2 text-scoreboard-red">
+            <span className="w-3 h-3 bg-scoreboard-red rounded-sm"></span>
+            {score.red}
+          </span>
+        </div>
+        <div
+          className={`flex items-center border-solid border border-white/30 gap-2 bg-background/10 rounded-xl px-3 py-1 ${
+            currentPlayer === "blue" && !gameOver.gameOver ? "glow-blue" : ""
+          }`}
+        >
+          <span className="flex items-center gap-2 text-scoreboard-blue">
+            <span className="w-3 h-3 bg-scoreboard-blue rounded-sm"></span>
+            {score.blue}
+          </span>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,8 +1,9 @@
 import Wall from "./Wall";
 import Tile from "./Tile";
+import Intersection from "./Intersection";
 
 const tileSize = "3fr";
-const wallThickness = "1fr";
+const wallThickness = "0.5fr";
 
 const sizes = [
   tileSize,
@@ -32,23 +33,42 @@ const GameBoard = ({ board, onWallClick, onTileClick }) => {
           onClick={() => onWallClick(index)}
         />
       );
-    } else if (tile.type == "tile") {
+    } else if (tile.type === "tile") {
+      switch (index) {
+        case 0:
+          tile.rounded = "rounded-tl-3xl";
+          break;
+        case 12:
+          tile.rounded = "rounded-tr-3xl";
+          break;
+        case 156:
+          tile.rounded = "rounded-bl-3xl";
+          break;
+        case 168:
+          tile.rounded = "rounded-br-3xl";
+          break;
+        default:
+          tile.rounded = "";
+          break;
+      }
+
       gridElements.push(
         <Tile
           key={index}
           color={tile.color}
           puck={tile.puck}
-          clickable={tile.clickable}
+          rounded={tile.rounded}
           onClick={() => onTileClick(index)}
         />
       );
     } else {
       // Intersection between walls
-      gridElements.push(<div key={index} className="bg-wall-default" />);
+      gridElements.push(<Intersection key={index} colors={tile.colors} />);
     }
   });
+
   return (
-    <div className="w-full max-w-[90vmin] aspect-square">
+    <div className="outline-solid outline-6 outline-tile-default w-full max-w-[600px] aspect-square mx-auto p-4 rounded-3xl shadow-lg bg-wall-default box-border">
       <div
         className="grid w-full h-full"
         style={{

@@ -1,5 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap");
 @import "tailwindcss";
 @custom-variant hover (&:hover);
+
+:root {
+  --intersection-red: #984244;
+  --intersection-blue: #1b406a;
+  --intersection-default: #a8897e;
+}
+
+body {
+  font-family: "Rubik", sans-serif;
+}
 
 @theme {
   --color-tile-default: #7e5547;
@@ -7,8 +18,8 @@
   --color-tile-owned-red: #f44336;
   --color-tile-owned-blue: #2196f3;
 
-  --color-tile-clickable-red: #ff5447;
-  --color-tile-clickable-blue: #2196f3;
+  --color-tile-clickable-red: #ff8d85;
+  --color-tile-clickable-blue: #64b5f7;
   --color-tile-hover-red: #ff8076;
   --color-tile-hover-blue: #64b5f7;
 
@@ -24,5 +35,57 @@
   --color-wall-hover-red: #e6a1a1;
   --color-wall-hover-blue: #a1c6e6;
 
-  --color-background: #fec196;
+  --color-scoreboard-background: #8493ae;
+  --color-scoreboard-outline: #8493ae;
+  --color-scoreboard-red: #ff5c5c;
+  --color-scoreboard-blue: #5c5cff;
+
+  --color-background: #0f141e;
+}
+
+.bg {
+  background: #242424;
+  background: linear-gradient(302deg, #b80f00 0%, #000000 50%, #1f487e 100%);
+}
+
+@keyframes glow-red {
+  0%,
+  100% {
+    box-shadow: 0 0 8px 2px rgba(255, 92, 92, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(255, 92, 92, 1);
+  }
+}
+
+@keyframes glow-blue {
+  0%,
+  100% {
+    box-shadow: 0 0 8px 2px rgba(92, 92, 255, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(92, 92, 255, 1);
+  }
+}
+
+.glow-red {
+  animation: glow-red 2s infinite ease-in-out;
+}
+
+.glow-blue {
+  animation: glow-blue 2s infinite ease-in-out;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    filter: saturate(1);
+  }
+  50% {
+    filter: saturate(3);
+  }
+}
+
+.blink {
+  animation: blink 2s infinite ease-in-out;
 }

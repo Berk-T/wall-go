@@ -25,7 +25,15 @@ export function useGameLogic() {
               onClick: () => handleWallClick(row * 13 + col),
             };
           } else {
-            tile = { type: "intersection" };
+            tile = {
+              type: "intersection",
+              colors: {
+                top: "--intersection-default",
+                right: "--intersection-default",
+                bottom: "--intersection-default",
+                left: "--intersection-default",
+              },
+            };
           }
         } else if (col % 2 === 1) {
           tile = {
@@ -36,7 +44,7 @@ export function useGameLogic() {
         } else {
           tile = {
             type: "tile",
-            color: "clickable-" + currentPlayer,
+            color: "clickable-red",
             puck: null,
             onClick: () => handleTileClick(row * 13 + col),
           };
@@ -54,33 +62,6 @@ export function useGameLogic() {
     board[36].color = "default";
     board[132].puck = "blue";
     board[132].color = "default";
-
-    // // Color testing
-    // board[0].color = "owned-red";
-    // board[0].puck = "red";
-
-    // board[1].color = "owned-red";
-
-    // board[2].color = "owned-blue";
-    // board[2].puck = "blue";
-
-    // board[3].color = "owned-blue";
-
-    // board[4].color = "selected";
-
-    // board[5].color = "owned-blue";
-
-    // board[6].color = "clickable-red";
-    // board[6].puck = "blue";
-
-    // board[7].color = "owned-red";
-
-    // board[8].color = "clickable-blue";
-    // board[8].puck = "red";
-
-    // board[9].color = "clickable-red";
-
-    // board[11].color = "clickable-blue";
 
     return board;
   };
@@ -115,6 +96,8 @@ export function useGameLogic() {
       }
     });
 
+    // Change intersection colors
+    newBoard = calculateIntersectionColors(newBoard, index);
     // If wall is placed without moving
     setSelectedTile(null);
 
@@ -154,6 +137,75 @@ export function useGameLogic() {
     }
     // Hand over turn
     switchPlayer();
+  };
+
+  const calculateIntersectionColors = (board, index) => {
+    const newBoard = [...board];
+    // Check if wall is horizontal or vertical
+    const row = Math.floor(index / BOARD_SIZE);
+    const col = index % BOARD_SIZE;
+    const isHorizontal = row % 2 === 1;
+    let intersections = [];
+    if (isHorizontal) {
+      if (col !== 0) {
+        intersections.push(index - 1); // Left neighbor
+      }
+      if (col !== BOARD_SIZE - 1) {
+        intersections.push(index + 1); // Right neighbor
+      }
+    } else {
+      if (row !== 0) {
+        intersections.push(index - BOARD_SIZE); // Top neighbor
+      }
+      if (row !== BOARD_SIZE - 1) {
+        intersections.push(index + BOARD_SIZE); // Bottom neighbor
+      }
+    }
+
+    for (const intersectionIndex of intersections) {
+      const neighbors = {
+        left: intersectionIndex - 1,
+        right: intersectionIndex + 1,
+        top: intersectionIndex - BOARD_SIZE,
+        bottom: intersectionIndex + BOARD_SIZE,
+      };
+
+      let colors = {};
+      for (const key in neighbors) {
+        const neighborColor = board[neighbors[key]].color;
+        if (neighborColor.includes("owned")) {
+          colors[key] = "--intersection-" + neighborColor.substring(6); // Keep owned color
+        } else {
+          colors[key] = "--intersection-default"; // Default color for unowned
+        }
+      }
+
+      let updatedColors = { ...colors };
+      const adjacents = {
+        top: ["left", "right"],
+        right: ["top", "bottom"],
+        bottom: ["left", "right"],
+        left: ["top", "bottom"],
+      };
+      for (const side in adjacents) {
+        for (const neighbor of adjacents[side]) {
+          if (
+            colors[side] === colors[neighbor] &&
+            colors[side] !== "--intersection-default"
+          ) {
+            updatedColors[side] = colors[side];
+            updatedColors[neighbor] = colors[side];
+          }
+        }
+      }
+      newBoard[intersectionIndex] = {
+        ...newBoard[intersectionIndex],
+        colors: updatedColors,
+      };
+      newBoard[intersectionIndex];
+    }
+
+    return newBoard;
   };
 
   const freezeBoard = (board) => {
@@ -205,24 +257,6 @@ export function useGameLogic() {
     }
 
     return true; // Game is over
-  };
-
-  const visualizeAreas = (board, areas) => {
-    const newBoard = board.map((tile) => {
-      return {
-        ...tile,
-      };
-    });
-
-    areas.forEach((area, index) => {
-      console.log("Visualizing area:", index);
-      area.forEach((tileIndex) => {
-        newBoard[tileIndex].color =
-          index % 2 === 0 ? "owned-red" : "owned-blue";
-      });
-    });
-
-    return newBoard;
   };
 
   const handlePlacement = (index) => {
@@ -445,6 +479,15 @@ export function useGameLogic() {
     return newBoard;
   };
 
+  const resetGame = () => {
+    setCurrentPlayer("red");
+    setSelectedTile(null);
+    setRemainingPlacements(4);
+    setScore({ red: 0, blue: 0 });
+    setGameOver({ gameOver: false, winner: null, reason: null });
+    setBoard(createBoard());
+  };
+
   return {
     board,
     currentPlayer,
@@ -452,6 +495,7 @@ export function useGameLogic() {
     gameOver,
     handleTileClick,
     handleWallClick,
+    resetGame,
   };
 }
 
