@@ -38,7 +38,7 @@ export default function Tile({
       {/* Puck on top */}
       {puck && (
         <div
-          className={`relative w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-gray-50 ${
+          className={`relative w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-white ${
             puck === "red" ? "bg-puck-red" : "bg-puck-blue"
           }`}
         />
