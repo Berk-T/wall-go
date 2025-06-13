@@ -5,7 +5,7 @@
 :root {
   --intersection-red: #984244;
   --intersection-blue: #1b406a;
-  --intersection-default: #a8897e;
+  --intersection-default: #ba9469;
 }
 
 body {
@@ -17,6 +17,7 @@ body {
   --color-tile-selected: #ffc914;
   --color-tile-owned-red: #c65355;
   --color-tile-owned-blue: #4d8ad1;
+  --color-tile-owned-none: #342f2d;
 
   --color-tile-clickable: #56fa56;
   --color-tile-hover-red: #ff8076;
@@ -25,7 +26,7 @@ body {
   --color-puck-red: #b80f00;
   --color-puck-blue: #1f487e;
 
-  --color-wall-default: #a8897e;
+  --color-wall-default: #ba9469; /* #a8897e */
   --color-wall-red: #984244;
   --color-wall-blue: #1b406a;
 
@@ -40,10 +41,98 @@ body {
   --color-scoreboard-blue: #5c5cff;
 
   --color-background: #0f141e;
+  --color-background-red: #660900;
+  --color-background-blue: #183863;
 }
 
-.bg {
-  background: linear-gradient(302deg, #b80f00 0%, #000000 50%, #1f487e 100%);
+.bg-animated-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  overflow: hidden;
+  background: #000000;
+  background: -webkit-linear-gradient(
+    45deg,
+    transparent 0%,
+    black 33%,
+    transparent 66%,
+    black 100%
+  );
+  background: -moz-linear-gradient(
+    45deg,
+    transparent 0%,
+    black 33%,
+    transparent 66%,
+    black 100%
+  );
+  background: -ms-linear-gradient(
+    45deg,
+    transparent 0%,
+    black 33%,
+    transparent 66%,
+    black 100%
+  );
+  background: -o-linear-gradient(
+    45deg,
+    transparent 0%,
+    black 33%,
+    transparent 66%,
+    black 100%
+  );
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    black 33%,
+    transparent 66%,
+    black 100%
+  );
+
+  background-size: 400% 400%;
+  -webkit-animation: bg-scroll 10s linear infinite;
+  -moz-animation: bg-scroll 10s linear infinite;
+  animation: bg-scroll 10s linear infinite;
+  animation-delay: 0s;
+  animation-fill-mode: backwards;
+}
+
+.bg-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+  overflow: hidden;
+}
+
+@-webkit-keyframes bg-scroll {
+  0% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 16% 100%;
+  }
+}
+
+@-moz-keyframes bg-scroll {
+  0% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 16% 100%;
+  }
+}
+
+@keyframes bg-scroll {
+  0% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 16% 100%;
+  }
 }
 
 @keyframes glow-red {

@@ -115,7 +115,7 @@ export function useGameLogic() {
           allAreasEnclosed = false; // Mixed area
         }
 
-        if (owner === "red" || owner === "blue") {
+        if (owner !== "mixed") {
           // console.log("Area claimed by:", owner);
           scores[owner] += area.length; // Tally score based on area size
           area.forEach((tileIndex) => {
@@ -633,5 +633,5 @@ const getAreaOwner = (board, area) => {
     return "mixed"; // Both players have pucks in the area
   }
 
-  return "empty"; // No pucks in the area
+  return "none"; // No pucks in the area
 };

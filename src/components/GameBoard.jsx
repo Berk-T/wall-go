@@ -21,7 +21,7 @@ const sizes = [
   tileSize,
 ];
 
-const GameBoard = ({ board, onWallClick, onTileClick }) => {
+const GameBoard = ({ board, onWallClick, onTileClick, resetCount }) => {
   const gridElements = [];
   board.map((tile, index) => {
     if (tile.type === "wall") {
@@ -55,7 +55,7 @@ const GameBoard = ({ board, onWallClick, onTileClick }) => {
 
       gridElements.push(
         <Tile
-          key={index}
+          key={resetCount + "-" + index}
           color={tile.color}
           puck={tile.puck}
           rounded={tile.rounded}
@@ -64,7 +64,9 @@ const GameBoard = ({ board, onWallClick, onTileClick }) => {
       );
     } else {
       // Intersection between walls
-      gridElements.push(<Intersection key={index} colors={tile.colors} />);
+      gridElements.push(
+        <Intersection key={resetCount + "-" + index} colors={tile.colors} />
+      );
     }
   });
 

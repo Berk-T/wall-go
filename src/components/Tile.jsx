@@ -10,6 +10,7 @@ export default function Tile({
     default: "bg-tile-default",
     "owned-red": "bg-tile-owned-red",
     "owned-blue": "bg-tile-owned-blue",
+    "owned-none": "bg-tile-owned-none",
     selected: "bg-tile-selected",
     "clickable-red": "bg-tile-clickable cursor-pointer hover:bg-tile-hover-red",
     "clickable-blue":

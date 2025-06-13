@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import GameBoard from "./components/GameBoard";
 import ScoreBoard from "./components/ScoreBoard";
+import AnimatedBackground from "./components/AnimatedBackground";
 import { useGameLogic } from "./hooks/useGameLogic";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
 
   const [showRules, setShowRules] = useState(false);
   const [showGameOver, setShowGameOver] = useState(false);
+  const [resetCount, setResetCount] = useState(0); // Used to trigger re-render on reset
 
   useEffect(() => {
     if (gameOver.gameOver) {
@@ -28,7 +30,10 @@ function App() {
 
   return (
     <>
-      <div className="bg min-h-screen flex flex-col place-items-center justify-start p-4">
+      <div
+        className={`min-h-screen flex flex-col place-items-center justify-start p-4`}
+      >
+        <AnimatedBackground currentPlayer={currentPlayer} />
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-md text-center">
           Wall Go
         </h1>
@@ -43,6 +48,7 @@ function App() {
           <div className="w-full flex justify-center">
             <GameBoard
               board={board}
+              resetCount={resetCount}
               onWallClick={handleWallClick}
               onTileClick={handleTileClick}
             />
@@ -50,7 +56,10 @@ function App() {
 
           <div className="flex w-full gap-2 mt-6">
             <button
-              onClick={resetGame}
+              onClick={() => {
+                resetGame();
+                setResetCount((prev) => prev + 1); // Increment to trigger re-render
+              }}
               className="px-6 py-2 flex-1 cursor-pointer rounded-md bg-background/30 text-white font-semibold hover:bg-background/80 transition"
             >
               ↻ Reset
