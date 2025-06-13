@@ -1,37 +1,9 @@
 import React from "react";
 
 const ScoreBoard = ({ score, gameOver, currentPlayer }) => {
-  const isGameOver = gameOver.gameOver;
-  const winnerText =
-    gameOver.winner === "red"
-      ? "Red"
-      : gameOver.winner === "blue"
-      ? "Blue"
-      : "Tie";
-
   return (
     <>
-      {isGameOver ? (
-        <>
-          <h2
-            className={`text-2xl sm:text-3xl font-extrabold mb-2 ${
-              gameOver.winner === "red"
-                ? "text-scoreboard-red"
-                : gameOver.winner === "blue"
-                ? "text-scoreboard-blue"
-                : "text-gray-400"
-            }`}
-          >
-            <span className="text-white">Winner: </span>
-            {winnerText}
-          </h2>
-          <p className="text-white mb-2 text-sm sm:text-base">
-            {gameOver.reason}
-          </p>
-        </>
-      ) : null}
-
-      <div className="flex flex-col sm:flex-row mb-5 justify-center gap-4 sm:gap-8 text-base sm:text-lg font-bold">
+      <div className="flex flex-row sm:flex-row mb-5 justify-center gap-4 sm:gap-8 text-base sm:text-lg md:text-xl lg:text-2xl font-bold">
         <div
           className={`flex items-center gap-2 border-solid border border-white/30 bg-background/10 rounded-xl px-3 py-1 ${
             currentPlayer === "red" && !gameOver.gameOver ? "glow-red" : ""

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import GameBoard from "./components/GameBoard";
 import ScoreBoard from "./components/ScoreBoard";
@@ -16,10 +16,19 @@ function App() {
   } = useGameLogic();
 
   const [showRules, setShowRules] = useState(false);
+  const [showGameOver, setShowGameOver] = useState(false);
+
+  useEffect(() => {
+    if (gameOver.gameOver) {
+      setShowGameOver(true);
+    } else {
+      setShowGameOver(false);
+    }
+  }, [gameOver]);
 
   return (
     <>
-      <div className="bg min-h-screen flex flex-col items-center justify-start p-4">
+      <div className="bg min-h-screen flex flex-col place-items-center justify-start p-4">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-md text-center">
           Wall Go
         </h1>
@@ -55,6 +64,36 @@ function App() {
           </div>
         </div>
 
+        {showGameOver && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+            <div className="bg-black text-center rounded-lg shadow-lg p-6 max-w-md w-full relative">
+              <button
+                onClick={() => setShowGameOver()}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
+                aria-label="Close"
+              >
+                ×
+              </button>
+              <h2
+                className={`text-2xl sm:text-3xl font-extrabold mb-2 ${
+                  gameOver.winner === "red"
+                    ? "text-scoreboard-red"
+                    : gameOver.winner === "blue"
+                    ? "text-scoreboard-blue"
+                    : "text-gray-400"
+                }`}
+              >
+                <span className="text-white">Winner: </span>
+                {gameOver.winner.charAt(0).toUpperCase() +
+                  gameOver.winner.slice(1)}
+              </h2>
+              <p className="text-white mb-2 text-sm sm:text-base">
+                {gameOver.reason}
+              </p>
+            </div>
+          </div>
+        )}
+
         {showRules && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative">
@@ -65,7 +104,7 @@ function App() {
               >
                 ×
               </button>
-              <h2 className="text-2xl font-bold mb-4 text-center text-black">
+              <h2 className="text-2xl font-bold text-center text-black">
                 Rules
               </h2>
               <div className="max-h-96 overflow-y-auto pr-2">

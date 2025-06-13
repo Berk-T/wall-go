@@ -45,6 +45,7 @@ export function useGameLogic() {
           tile = {
             type: "tile",
             color: "clickable-red",
+            owner: null,
             puck: null,
             onClick: () => handleTileClick(row * 13 + col),
           };
@@ -243,22 +244,24 @@ export function useGameLogic() {
       // console.log("No movable pucks left");
       setGameOver({
         gameOver: true,
-        winner: getNextPlayer(),
-        reason: "No movable pucks left",
+        winner: currentPlayer,
+        reason: `${
+          getNextPlayer().charAt(0).toUpperCase() + getNextPlayer().slice(1)
+        } has no movable pucks left.`,
       });
     } else if (scores.red >= 25) {
       // console.log("Red player wins with score:", scores.red);
       setGameOver({
         gameOver: true,
         winner: "red",
-        reason: "Red player reached 25 points",
+        reason: "Red player reached 25 points.",
       });
     } else if (scores.blue >= 25) {
       // console.log("Blue player wins with score:", scores.blue);
       setGameOver({
         gameOver: true,
         winner: "blue",
-        reason: "Blue player reached 25 points",
+        reason: "Blue player reached 25 points.",
       });
     } else if (allAreasEnclosed) {
       // console.log("All areas enclosed, game over");
@@ -325,8 +328,8 @@ export function useGameLogic() {
           color:
             tile.puck === player && puckHasMoves(board, idx)
               ? "clickable-" + player
-              : tile.color.includes("owned")
-              ? tile.color
+              : tile.owner
+              ? "owned-" + tile.owner
               : "default",
         };
       } else {
@@ -340,14 +343,7 @@ export function useGameLogic() {
   };
 
   const calculateClickableWalls = (board, index) => {
-    const directions = [
-      -13, // Up
-      13, // Down
-      -1, // Left
-      1, // Right
-    ];
-    for (const dir of directions) {
-      const neighborIndex = index + dir;
+    for (const neighborIndex of getWallNeighbors(board, index)) {
       if (
         neighborIndex >= 0 &&
         neighborIndex < board.length &&
@@ -544,11 +540,15 @@ const getTileNeighbors = (board, index) => {
 const getWallNeighbors = (board, index) => {
   const neighbors = [];
   const directions = [
-    -13, // up
-    13, // down
-    -1, // left
-    1, // right
+    -13, // Up
+    13, // Down
   ];
+  if (index % 13 !== 0) {
+    directions.push(-1);
+  } // Left
+  if (index % 13 !== 12) {
+    directions.push(1);
+  } // Right
 
   for (const dir of directions) {
     const neighborIndex = index + dir;

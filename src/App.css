@@ -14,12 +14,11 @@ body {
 
 @theme {
   --color-tile-default: #7e5547;
-  --color-tile-selected: #4caf50;
-  --color-tile-owned-red: #f44336;
-  --color-tile-owned-blue: #2196f3;
+  --color-tile-selected: #ffc914;
+  --color-tile-owned-red: #c65355;
+  --color-tile-owned-blue: #4d8ad1;
 
-  --color-tile-clickable-red: #ff8d85;
-  --color-tile-clickable-blue: #64b5f7;
+  --color-tile-clickable: #56fa56;
   --color-tile-hover-red: #ff8076;
   --color-tile-hover-blue: #64b5f7;
 
@@ -44,7 +43,6 @@ body {
 }
 
 .bg {
-  background: #242424;
   background: linear-gradient(302deg, #b80f00 0%, #000000 50%, #1f487e 100%);
 }
 
@@ -79,10 +77,10 @@ body {
 @keyframes blink {
   0%,
   100% {
-    filter: saturate(1);
+    opacity: 40%;
   }
   50% {
-    filter: saturate(3);
+    opacity: 10%;
   }
 }
 

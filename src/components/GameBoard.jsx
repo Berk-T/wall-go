@@ -29,6 +29,7 @@ const GameBoard = ({ board, onWallClick, onTileClick }) => {
         <Wall
           key={index}
           color={tile.color}
+          owner={tile.owner}
           clickable={tile.clickable}
           onClick={() => onWallClick(index)}
         />
@@ -68,7 +69,7 @@ const GameBoard = ({ board, onWallClick, onTileClick }) => {
   });
 
   return (
-    <div className="outline-solid outline-6 outline-tile-default w-full max-w-[600px] aspect-square mx-auto p-4 rounded-3xl shadow-lg bg-wall-default box-border">
+    <div className="outline-solid outline-6 outline-tile-default w-full h-full aspect-square p-4 rounded-3xl shadow-lg bg-wall-default box-border">
       <div
         className="grid w-full h-full"
         style={{
