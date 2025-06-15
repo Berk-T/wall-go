@@ -71,9 +71,12 @@ const GameBoard = ({ board, onWallClick, onTileClick, resetCount }) => {
   });
 
   return (
-    <div className="outline-solid outline-4 sm:outline-6 outline-tile-default w-full h-full aspect-square p-2 sm:p-4 rounded-2xl sm:rounded-3xl shadow-lg bg-wall-default box-border">
+    <div
+      className="outline-solid outline-4 sm:outline-6 outline-tile-default w-full aspect-square max-w-[95vw] max-h-[95vw] rounded-2xl sm:rounded-3xl shadow-lg bg-wall-default box-border flex items-center justify-center"
+      style={{ padding: "2%" }}
+    >
       <div
-        className="grid w-full h-full"
+        className="grid w-full h-full gap-0"
         style={{
           gridTemplateColumns: sizes.join(" "),
           gridTemplateRows: sizes.join(" "),

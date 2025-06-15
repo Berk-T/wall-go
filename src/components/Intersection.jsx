@@ -36,7 +36,6 @@ const Intersection = ({ colors }) => {
           clipPath: "polygon(0 100%, 100% 100%, 50% 50%)",
         }}
       />
-
       {/* Left triangle */}
       <div
         className="absolute inset-0"

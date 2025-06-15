@@ -34,7 +34,7 @@ function App() {
         className={`min-h-screen flex flex-col items-center justify-center p-4 pb-16`}
       >
         <AnimatedBackground currentPlayer={currentPlayer} />
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-md text-center">
+        <h1 className="text-6xl sm:text-7xl md:text-8xl font-extrabold text-white mb-4 drop-shadow-md text-center">
           Wall Go
         </h1>
 
@@ -46,12 +46,14 @@ function App() {
           />
 
           <div className="w-full flex justify-center my-4">
-            <GameBoard
-              board={board}
-              resetCount={resetCount}
-              onWallClick={handleWallClick}
-              onTileClick={handleTileClick}
-            />
+            <div className="w-full max-w-full sm:max-w-lg">
+              <GameBoard
+                board={board}
+                resetCount={resetCount}
+                onWallClick={handleWallClick}
+                onTileClick={handleTileClick}
+              />
+            </div>
           </div>
 
           <div className="flex w-full gap-2 mt-6">
