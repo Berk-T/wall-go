@@ -31,7 +31,7 @@ function App() {
   return (
     <>
       <div
-        className={`min-h-screen flex flex-col place-items-center justify-start p-4`}
+        className={`min-h-screen flex flex-col items-center justify-center p-4 pb-16`}
       >
         <AnimatedBackground currentPlayer={currentPlayer} />
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-md text-center">
@@ -45,7 +45,7 @@ function App() {
             currentPlayer={currentPlayer}
           />
 
-          <div className="w-full flex justify-center">
+          <div className="w-full flex justify-center my-4">
             <GameBoard
               board={board}
               resetCount={resetCount}
@@ -58,7 +58,7 @@ function App() {
             <button
               onClick={() => {
                 resetGame();
-                setResetCount((prev) => prev + 1); // Increment to trigger re-render
+                setResetCount((prev) => prev + 1);
               }}
               className="px-6 py-2 flex-1 cursor-pointer rounded-md bg-background/30 text-white font-semibold hover:bg-background/80 transition"
             >
@@ -71,11 +71,24 @@ function App() {
               Rules
             </button>
           </div>
+          <div className="fixed bottom-0 left-0 w-full bg-black bg-opacity-10 text-white text-center py-2 z-50 text-xs sm:text-sm">
+            Made with <span className="text-red-500">♥</span> by&nbsp;
+            <a
+              href="https://github.com/Berk-T/wall-go"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 group inline-block"
+            >
+              <span className="inline-block transition-transform duration-300 hover:scale-125">
+                🦀
+              </span>
+            </a>
+          </div>
         </div>
 
         {showGameOver && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-            <div className="bg-black text-center rounded-lg shadow-lg p-6 max-w-md w-full relative">
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-black text-center rounded-lg shadow-lg p-4 sm:p-6 max-w-[95vw] sm:max-w-md w-full relative">
               <button
                 onClick={() => setShowGameOver()}
                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
@@ -84,7 +97,7 @@ function App() {
                 ×
               </button>
               <h2
-                className={`text-2xl sm:text-3xl font-extrabold mb-2 ${
+                className={`text-xl sm:text-2xl md:text-3xl font-extrabold mb-2 ${
                   gameOver.winner === "red"
                     ? "text-scoreboard-red"
                     : gameOver.winner === "blue"
@@ -96,7 +109,7 @@ function App() {
                 {gameOver.winner.charAt(0).toUpperCase() +
                   gameOver.winner.slice(1)}
               </h2>
-              <p className="text-white mb-2 text-sm sm:text-base">
+              <p className="text-white mb-2 text-xs sm:text-sm md:text-base">
                 {gameOver.reason}
               </p>
             </div>
@@ -104,8 +117,8 @@ function App() {
         )}
 
         {showRules && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative">
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 max-w-[95vw] sm:max-w-md w-full relative">
               <button
                 onClick={() => setShowRules(false)}
                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
@@ -113,10 +126,10 @@ function App() {
               >
                 ×
               </button>
-              <h2 className="text-2xl font-bold text-center text-black">
+              <h2 className="text-xl sm:text-2xl font-bold text-center text-black mb-4">
                 Rules
               </h2>
-              <div className="max-h-96 overflow-y-auto pr-2">
+              <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto pr-2 text-sm sm:text-base">
                 <ol>
                   <li>
                     <strong>🎯 Objective</strong>
@@ -129,7 +142,7 @@ function App() {
                         both players, or
                       </li>
                       <li>
-                        <strong>Trapping</strong> all of your opponent’s pucks
+                        <strong>Trapping</strong> all of your opponent's pucks
                         so they cannot move.
                       </li>
                     </ul>
@@ -227,20 +240,6 @@ function App() {
             </div>
           </div>
         )}
-
-        <div className="fixed bottom-0 left-0 w-full bg-black bg-opacity-10 text-white text-center py-2 z-50 text-xs sm:text-sm">
-          Made with <span className="text-red-500">♥</span> by&nbsp;
-          <a
-            href="https://github.com/Berk-T/wall-go"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-blue-400 group inline-block"
-          >
-            <span className="inline-block transition-transform duration-300 hover:scale-125">
-              🦀
-            </span>
-          </a>
-        </div>
       </div>
     </>
   );

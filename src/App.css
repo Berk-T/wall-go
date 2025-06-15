@@ -46,7 +46,7 @@ body {
 }
 
 .bg-animated-gradient {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -99,7 +99,7 @@ body {
 }
 
 .bg-cover {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
