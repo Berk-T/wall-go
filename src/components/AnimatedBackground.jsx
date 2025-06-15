@@ -2,6 +2,7 @@ export default function AnimatedBackground({ currentPlayer }) {
   const backgroundColors = {
     red: "bg-background-red",
     blue: "bg-background-blue",
+    tie: "bg-background-tie",
   };
   return (
     <>

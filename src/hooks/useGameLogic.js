@@ -256,6 +256,7 @@ export function useGameLogic() {
         winner: "red",
         reason: "Red player reached 25 points.",
       });
+      setCurrentPlayer("red");
     } else if (scores.blue >= 25) {
       // console.log("Blue player wins with score:", scores.blue);
       setGameOver({
@@ -263,18 +264,21 @@ export function useGameLogic() {
         winner: "blue",
         reason: "Blue player reached 25 points.",
       });
+      setCurrentPlayer("blue");
     } else if (allAreasEnclosed) {
       // console.log("All areas enclosed, game over");
+      const winner =
+        scores.red > scores.blue
+          ? "red"
+          : scores.red === scores.blue
+          ? "tie"
+          : "blue";
       setGameOver({
         gameOver: true,
-        winner:
-          scores.red > scores.blue
-            ? "red"
-            : scores.red === scores.blue
-            ? "tie"
-            : "blue",
+        winner: winner,
         reason: "All areas enclosed",
       });
+      setCurrentPlayer(winner);
     }
 
     return true; // Game is over

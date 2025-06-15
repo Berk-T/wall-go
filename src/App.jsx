@@ -64,7 +64,7 @@ function App() {
               }}
               className="px-6 py-2 flex-1 cursor-pointer rounded-md bg-background/30 text-white font-semibold hover:bg-background/80 transition"
             >
-              ↻ Reset
+              Reset
             </button>
             <button
               onClick={() => setShowRules(true)}
@@ -89,11 +89,14 @@ function App() {
         </div>
 
         {showGameOver && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowGameOver()}
+          >
             <div className="bg-black text-center rounded-lg shadow-lg p-4 sm:p-6 max-w-[95vw] sm:max-w-md w-full relative">
               <button
                 onClick={() => setShowGameOver()}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
+                className="absolute top-1 right-3 text-gray-500 hover:text-gray-800 text-3xl font-bold"
                 aria-label="Close"
               >
                 ×
@@ -119,11 +122,14 @@ function App() {
         )}
 
         {showRules && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowRules(false)}
+          >
             <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 max-w-[95vw] sm:max-w-md w-full relative">
               <button
                 onClick={() => setShowRules(false)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
+                className="absolute top-3 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold"
                 aria-label="Close"
               >
                 ×
